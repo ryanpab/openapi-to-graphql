@@ -110,11 +110,27 @@ function getResolver({ operation, argsFromLink = {}, payloadName, data, baseUrl,
                 });
                 args[paramNameWithoutLocation] = value;
             }
+
+            if(args[paramNameWithoutLocation] === null){
+                args[paramNameWithoutLocation] = '';
+            }
         }
+
         // Stored used parameters to future requests:
         resolveData.usedParams = Object.assign(resolveData.usedParams, args);
         // Build URL (i.e., fill in path parameters):
-        const { path, query, headers } = Oas3Tools.instantiatePathAndGetQuery(operation.path, operation.parameters, args);
+
+        let path, query, headers = null;
+        
+        try{
+            const params = Oas3Tools.instantiatePathAndGetQuery(operation.path, operation.parameters, args);
+            path = params.path;
+            query = params.query;
+            headers = params.headers;
+        }catch(err){
+            return Promise.reject(err);
+        }
+
         const url = baseUrl + path;
         /**
          * The Content-type and accept property should not be changed because the

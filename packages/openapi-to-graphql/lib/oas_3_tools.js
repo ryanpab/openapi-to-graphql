@@ -285,6 +285,9 @@ function instantiatePathAndGetQuery(path, parameters, args // NOTE: argument key
                 switch (param.in) {
                     // Path parameters
                     case 'path':
+                        if(args[sanitizedParamName] === ''){
+                            throw new Error(`{${param.name}} value is empty`);
+                        }
                         path = path.replace(`{${param.name}}`, args[sanitizedParamName]);
                         break;
                     // Query parameters
